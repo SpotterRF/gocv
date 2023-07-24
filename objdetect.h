@@ -37,6 +37,7 @@ Mat HOG_GetDefaultPeopleDetector();
 void HOGDescriptor_SetSVMDetector(HOGDescriptor hog, Mat det);
 
 struct Rects GroupRectangles(struct Rects rects, int groupThreshold, double eps);
+struct Rects GroupRectanglesWithWeights(struct Rects rects, IntVector* weights, int groupThreshold, double eps);
 
 #ifdef __cplusplus
 }

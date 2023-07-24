@@ -125,3 +125,36 @@ struct Rects GroupRectangles(struct Rects rects, int groupThreshold, double eps)
     Rects ret = {results, (int)vRect.size()};
     return ret;
 }
+
+// Group Rectangles. Returns grouped rectangles and pointer to weights used to merge candidate rects
+struct Rects GroupRectanglesWithWeights(struct Rects rects, IntVector* weights, int groupThreshold, double eps) {
+    std::vector<cv::Rect> vRect;
+    for (int i = 0; i < rects.length; ++i) {
+        cv::Rect r = cv::Rect(rects.rects[i].x, rects.rects[i].y, rects.rects[i].width,
+                              rects.rects[i].height);
+        vRect.push_back(r);
+    }
+    std::vector<int> vWeights;
+
+    cv::groupRectangles(vRect, vWeights, groupThreshold, eps);
+
+    // add grouped rect results
+    Rect* rect_results = new Rect[vRect.size()];
+    for (size_t i = 0; i < vRect.size(); ++i) {
+        Rect r = {vRect[i].x, vRect[i].y, vRect[i].width, vRect[i].height};
+        rect_results[i] = r;
+    }
+
+    // add rect group score results
+    int* pWeights = new int[vWeights.size()];
+    for (size_t i=0; i<vWeights.size(); ++i) {
+        pWeights[i] = vWeights[i];
+    }
+
+    // set IntVector reference
+    weights->length = vWeights.size();
+    weights->val = pWeights;
+
+    Rects ret = {rect_results, (int)vRect.size()};
+    return ret;
+}
